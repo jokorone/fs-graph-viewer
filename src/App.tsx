@@ -1,22 +1,18 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/api/dialog";
+import { useEvent } from "./hooks/events";
+import { ImportFromFs } from "./features/ImportFromFs";
+
 
 // import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
 
   return (
     <div className="container">
-      <h1 className="text-3xl font-bold underline">Welcome to Tauri!</h1>
-
-      <form
+      <ImportFromFs/>
+      {/* <form
         className="row"
         onSubmit={(e) => {
           e.preventDefault();
@@ -29,9 +25,8 @@ function App() {
           placeholder="Enter a name..."
         />
         <button type="submit">Greet</button>
-      </form>
+      </form> */}
 
-      <p>{greetMsg}</p>
     </div>
   );
 }
