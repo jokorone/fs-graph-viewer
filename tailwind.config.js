@@ -11,5 +11,6 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   variants: {},
+  darkMode: 'class',
   plugins: [],
 }

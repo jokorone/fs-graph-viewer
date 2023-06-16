@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from './../../hooks/theme';
+import { useTheme } from '../../hooks/theme';
 
 export const DarkmodeToggle = React.memo(
   (props: ReturnType<typeof useTheme>

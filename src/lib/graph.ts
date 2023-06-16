@@ -1,6 +1,6 @@
 import createViewport, { updateGraphVisibility } from './view/viewport';
 import createPixiApp from './pixi/app';
-import createGraphModel, {  ID, RawGraphModel, RawGraphNode } from './d3/model';
+import createGraphModel, {  ID, RawGraphModel } from './d3/model';
 import createSimulation from './d3/simulation';
 import createLayers from './pixi/layers';
 import createTextureCache from './pixi/texture-cache';
@@ -29,21 +29,21 @@ function createGraph(
     interactionCallback: (node: string|null, type: Interaction) => void;
   }
 ) {
-  console.log('createGraph');
-
   const model = createGraphModel(data);
-  const {simulation, attachForces} = createSimulation(model);
+  const { simulation, attachForces, attachData } = createSimulation(model);
 
   return {
     updateSimulationSettings: (settings: typeof DefaultSimulationSettings) => {
       attachForces(settings);
     },
+    updateSimulationData: (data: RawGraphModel) => {
+      attachData(createGraphModel(data));
+    },
     init: (element: HTMLCanvasElement) => {
-      const app = createPixiApp({ canvasEl: element });
-      const view = createViewport(app, element);
+      const app = createPixiApp({ element });
+      const view = createViewport(app, app.renderer.view);
       const cache = createTextureCache(app.renderer);
       const interaction = createInteraction(
-        model,
         view.viewport,
         app.renderer,
         simulation,
@@ -55,6 +55,13 @@ function createGraph(
             getPixiNode = (id: ID) => items.nodes.get(id) ?? null,
             getPixiLinks = (id: ID) => items.links.get(id) ?? [];
       const resizeObserver = view.registerResizeObserver(items);
+
+
+      element.onmousemove = (e) => {
+        const {x: globalX, y: globalY} = view.viewport.toWorld({x: e.clientX, y: e.clientY});
+        view.mouse.position.set(globalX, globalY);
+        // view.mouse.position.set(e.clientX, e.clientY);
+      }
 
       // why?
       app.renderer.plugins.interaction.moveWhenInside = true;
@@ -68,9 +75,9 @@ function createGraph(
               false
             );
           }
-        })
+        });
 
-        resizeObserver.observe(element);
+        resizeObserver.observe(app.renderer.view);
 
         // give the simulation time to set coordinates
         setTimeout(() => {
@@ -111,6 +118,7 @@ function createGraph(
         if (!links) return;
 
         const attachedLinks = new Set([...links.sourceFor, ...links.targetOf]);
+
         for (const id of attachedLinks) {
           renderLinksByItem(getPixiLinks(id), links.sourceFor.includes(id));
         }
@@ -139,11 +147,11 @@ function createGraph(
         simulation.stop();
         app.stop();
         resizeObserver.disconnect();
-        app.destroy(false, {
-          children: true,
-          texture: true,
-          baseTexture: true
-        });
+        // app.destroy(false, {
+        //   children: true,
+        //   texture: true,
+        //   baseTexture: true
+        // });
       }
 
       return {

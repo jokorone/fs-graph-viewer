@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { DefaultSimulationSettings, SimulationSettings } from '../lib/d3/settings';
 
-export const useGraphSettings = (
-  initialSimulationSettings: SimulationSettings = DefaultSimulationSettings
+export const useGraphSettings = <T>(
+  initialSettings: T
 ) => {
   const [
-    simulationSettings,
-    _setSimulationSettings
-  ] = useState<SimulationSettings>(initialSimulationSettings);
+    settings,
+    setSettings
+  ] = useState<T>(initialSettings);
 
-  const updateSimulationSetting = (key: keyof SimulationSettings, value: number) =>
-    _setSimulationSettings(settings => ({
+  const updateSimulationSetting = (
+    key: keyof T,
+    value: T[keyof T]
+  ) => setSettings(settings => ({
       ...settings,
       [key]: value
-    })
-  );
+  }));
 
-  return { simulationSettings, updateSimulationSetting };
+  return {
+    simulationSettings: settings,
+    updateSimulationSetting
+  };
 }

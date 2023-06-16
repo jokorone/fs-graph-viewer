@@ -1,56 +1,89 @@
 import React, { useState } from 'react';
 
-interface FolderProps {
+interface File {
   name: string;
-  children: FolderProps[];
+  // Other file properties
 }
 
-const Folder: React.FC<FolderProps> = ({ name, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+interface Folder {
+  name: string;
+  children: Folder[];
+  leafs: File[];
+}
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
+interface FolderTreeProps {
+  rootFolders: Folder[];
+}
+
+const FolderTree: React.FC<FolderTreeProps> = ({ rootFolders }) => {
+  const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
+
+  const toggleFolder = (folderName: string) => {
+    setExpandedFolders((prevExpandedFolders) => {
+      if (prevExpandedFolders.includes(folderName)) {
+        return prevExpandedFolders.filter((name) => name !== folderName);
+      } else {
+        return [...prevExpandedFolders, folderName];
+      }
+    });
+  };
+
+  const renderFolder = (folder: Folder, indent: number) => {
+    const isExpanded = expandedFolders.includes(folder.name);
+
+    return (
+      <div key={folder.name} style={{ marginLeft: `${indent * 16}px` }}>
+        <div
+          className="cursor-pointer"
+          onClick={() => toggleFolder(folder.name)}
+        >
+          {isExpanded ? '-' : '+'} {folder.name}
+        </div>
+        {isExpanded && (
+          <>
+            {folder.children
+              .sort((a, b) => compareChildren(a, b))
+              .map((child) => {
+                if (child.children.length > 0 || child.leafs.length > 0) {
+                  return renderFolder(child, indent + 1);
+                } else {
+                  return (
+                    <div
+                      key={child.name}
+                      style={{ marginLeft: `${(indent + 1) * 16}px` }}
+                    >
+                      {child.name}
+                    </div>
+                  );
+                }
+              })}
+            {folder.leafs.map((file) => (
+              <div
+                key={file.name}
+                style={{ marginLeft: `${(indent + 1) * 16}px` }}
+              >
+                {file.name}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    );
+  };
+
+  const compareChildren = (a: Folder, b: Folder) => {
+    if (a.children.length > 0 && b.children.length === 0) {
+      return -1;
+    } else if (a.children.length === 0 && b.children.length > 0) {
+      return 1;
+    } else {
+      return a.name.localeCompare(b.name);
+    }
   };
 
   return (
-    <div className="ml-4">
-      <div className="flex items-center cursor-pointer" onClick={handleToggle}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-5 w-5 ${isOpen ? 'text-blue-500' : 'text-gray-500'}`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M6 4a1 1 0 011-1h5a1 1 0 110 2H7a1 1 0 01-1-1zm-1 4a1 1 0 100 2h10a1 1 0 100-2H5zm-1 4a1 1 0 011-1h5a1 1 0 110 2H7a1 1 0 01-1-1zm-1 4a1 1 0 100 2h10a1 1 0 100-2H5z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <span className="ml-1">{name}</span>
-      </div>
-
-      {isOpen && (
-        <div className="ml-6">
-          {children.map((child) => (
-            <Folder key={child.name} name={child.name} children={child.children} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-interface FolderTreeProps {
-  folders: FolderProps[];
-}
-
-const FolderTree: React.FC<FolderTreeProps> = ({ folders }) => {
-  return (
-    <div className="mt-4">
-      {folders.map((folder) => (
-        <Folder key={folder.name} name={folder.name} children={folder.children} />
-      ))}
+    <div className="text-left"> {/* Add the text-left class */}
+      {rootFolders.map((rootFolder) => renderFolder(rootFolder, 0))}
     </div>
   );
 };

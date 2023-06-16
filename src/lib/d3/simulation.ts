@@ -18,7 +18,7 @@ export type Forces = ReturnType<typeof createForces>;
 
 function createSimulation(
   data: GraphModel,
-  settings = DefaultSimulationSettings
+  settings = DefaultSimulationSettings,
 )  {
   const simulation = forceSimulation<D3Node, RawGraphLink>();
   const forces = createForces();
@@ -50,7 +50,7 @@ function attachForcesToSimulation(
   }
 
   if (forces.forceLink) {
-    console.log('-- forceLink');
+    // console.log('-- forceLink');
 
     simulation.force('link', forces.forceLink
       .distance(settings.linkDistance)
@@ -59,7 +59,7 @@ function attachForcesToSimulation(
   }
 
   if (forces.forceCharge) {
-    console.log('-- forceCharge');
+    // console.log('-- forceCharge');
 
     simulation.force('charge', forces.forceCharge
       .strength(settings.chargeForceStrength)
@@ -68,7 +68,7 @@ function attachForcesToSimulation(
   }
 
   if (forces.forceCollide) {
-    console.log('-- forceCollide');
+    // console.log('-- forceCollide');
 
     simulation.force('collide', forces.forceCollide
       .strength(settings?.collideStrength)
@@ -77,7 +77,7 @@ function attachForcesToSimulation(
   }
 
   if (forces.forceCenter) {
-    console.log('-- forceCenter');
+    // console.log('-- forceCenter');
 
     simulation.force('center', forces.forceCenter
       .x(settings.forceX)
@@ -85,14 +85,14 @@ function attachForcesToSimulation(
   }
 
   if (forces.forceX) {
-    console.log('-- forceX');
+    // console.log('-- forceX');
 
     simulation.force('forceX', forces.forceX
     .x(settings.forceX))//window.innerWidth / 4)))
   }
 
   if (forces.forceY) {
-    console.log('-- forceY');
+    // console.log('-- forceY');
 
     simulation.force('forceY', forces.forceY
     .y(settings.forceY))//window.innerHeight / 4)));
@@ -119,6 +119,7 @@ function attachDataToSimulation(
     nodes = Object.values(Object.fromEntries(data.nodes)),
     links = Object.values(Object.fromEntries(data.links))
                   .flatMap(link => link.links);
+
   simulation.nodes(nodes as D3Node[]);
   forces.forceLink.links(links);
 }

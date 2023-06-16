@@ -22,7 +22,9 @@ export type GraphSettingInputConfig = {
 
 export const humanReadable = (key: SimulationSettingsEnum) => HumanSimulationSettings[key];
 
-const HumanSimulationSettings = {
+const HumanSimulationSettings: {
+  [key in SimulationSettingsEnum]: string
+} = {
   [SimulationSettingsEnum.chargeForceStrength]: 'cozyness',
   [SimulationSettingsEnum.chargeDistanceMin]: 'charge distance min',
   [SimulationSettingsEnum.chargeDistanceMax]: 'charge distance max',
@@ -38,12 +40,16 @@ const HumanSimulationSettings = {
 export const DefaultSimulationSettings: {
   [key in SimulationSettingsEnum]: number
 } = {
-  chargeForceStrength: -100,
+  chargeForceStrength: -200,
   chargeDistanceMin: 1,
-  chargeDistanceMax: 420,
+  chargeDistanceMax: 1312,
   collideRadius: 0,
   collideStrength: 0,
   linkDistance: 35,
+  // forceCenterX: 0,// Math.floor(window.innerWidth * .1),
+  // forceCenterY: 0,// Math.floor(window.innerHeight * .1),
+  // forceX: 0,// Math.floor(window.innerWidth * .1),
+  // forceY: 0,// Math.floor(window.innerHeight * .1),
   forceCenterX: Math.floor(window.innerWidth * .1),
   forceCenterY: Math.floor(window.innerHeight * .1),
   forceX: Math.floor(window.innerWidth * .1),
@@ -91,7 +97,7 @@ export const SimulationSettingsInputs: {
   [SimulationSettingsEnum.forceCenterY]: {
     step: 1,
     min: 0,
-    max: window.innerHeight * 1.75,
+    max: window.innerHeight,
   },
   [SimulationSettingsEnum.forceX]: {
     step: 1,
@@ -101,6 +107,6 @@ export const SimulationSettingsInputs: {
   [SimulationSettingsEnum.forceY]: {
     step: 1,
     min: 0,
-    max: window.innerHeight * 1.75,
+    max: window.innerHeight,
   },
 }

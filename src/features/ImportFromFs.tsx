@@ -5,7 +5,11 @@ import Button from "../components/Button";
 
 import {Node} from "../bindings/Node";
 
-export function ImportFromFs() {
+export function ImportFromFs(
+  props: {
+    callback: React.Dispatch<React.SetStateAction<Node[]>>
+  }
+) {
   const openDialog = async () => {
     const selected = await open({
       directory: true,
@@ -18,6 +22,7 @@ export function ImportFromFs() {
     } else {
       const result = await invoke<Node>("import_from_dir", { path: selected });
       console.log(result);
+      props.callback(files => [...files, result]);
     }
     if (!selected) return;
   }

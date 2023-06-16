@@ -20,7 +20,7 @@ export type RawGraphModel = {
 
 export type GraphNode = RawGraphNode;
 
-type Links = {
+type Link = {
   sourceFor: ID[],
   targetOf: ID[],
   links: RawGraphLink[]
@@ -28,12 +28,12 @@ type Links = {
 
 export type GraphModel = {
   nodes: Map<ID, GraphNode>
-  links: Map<ID, Links>
+  links: Map<ID, Link>
 };
 
 const createGraphModel = (data: RawGraphModel): GraphModel => {
   const nodes = new Map<ID, GraphNode>();
-  const links = new Map<ID, Links>();
+  const links = new Map<ID, Link>();
   const model = { nodes, links };
 
   const getLinks = (id?: ID) => {

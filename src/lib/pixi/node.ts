@@ -37,10 +37,6 @@ function createNode(id: ID) {
   // nodeIcon.anchor.set(0.5);
   // nodeGfx.addChild(nodeIcon);
 
-  node.on('mousedown', (event: InteractionEvent) => {
-    console.log(node.name);
-  })
-
   return node;
 }
 

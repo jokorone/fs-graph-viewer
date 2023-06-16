@@ -7,13 +7,13 @@ export const SettingsContainer = (
     props: ReturnType<typeof useGraphSettings> & ReturnType<typeof useTheme>
   ) => {
 
-  return(<>
-    <div className="absolute top-0 right-0">
+  return(<div className='absolute right-2'>
+    <div className="">
       <DarkmodeToggle {...props}/>
     </div>
 
-    <div className='absolute bottom-2 right-0'>
+    <div className="">
       <SimulationSettings {...props}/>
     </div>
-  </>);
+  </div>);
 };

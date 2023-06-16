@@ -26,7 +26,7 @@ function createPixiItems(
     pixiNode.name = id.toString();
     layers.nodeLayer.addChild(pixiNode);
 
-    nodes.set(id, pixiNode)
+    nodes.set(id, pixiNode);
 
     pixiNode.on('mousedown', handlers.onNodeMouseDown);
     pixiNode.on('mouseup', handlers.onNodeMouseUp);
@@ -45,14 +45,14 @@ function createPixiItems(
         target,
         item: pixiLink
       } as PixiLink;
-    })
+    });
 
     links.set(source, _links);
   }
 
   return {
     nodes,
-    links
+    links,
   }
 }
 

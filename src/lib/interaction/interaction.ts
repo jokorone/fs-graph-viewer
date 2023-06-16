@@ -3,7 +3,7 @@ import { AbstractRenderer } from "@pixi/core";
 import { InteractionEvent } from "@pixi/interaction";
 import { DisplayObject } from "@pixi/display";
 import { Simulation } from "../d3/simulation";
-import { GraphModel, GraphNode, ID } from "../d3/model";
+import { GraphNode, ID } from "../d3/model";
 import { D3DragEvent, drag } from "d3-drag";
 import { SimulationNodeDatum } from "d3-force";
 import { select } from "d3";
@@ -12,7 +12,6 @@ type DragEvent = D3DragEvent<HTMLCanvasElement, GraphNode, SimulationNodeDatum>;
 export type Interaction = 'hover' | 'drag' | 'click';
 
 function createInteraction(
-  model: GraphModel,
   viewport: Viewport,
   renderer: AbstractRenderer,
   simulation: Simulation,
@@ -30,12 +29,19 @@ function createInteraction(
   const selectTarget = (event: DragEvent) => {
     const
       { x, y } = viewport.toWorld(event.x, event.y),
-      selectionDistance = 25 - (viewport.scale.x * 10);
+      global = viewport.toGlobal({ x: event.x, y: event.y }),
+      selectionDistance = 25;
+
+    console.log('-- viewport', event.x, event.y, simulation.find(event.x, event.y, selectionDistance));
+    console.log('-- world', x, y, simulation.find(x, y, selectionDistance));
+    console.log('-- global', global.x, global.y, simulation.find(global.x, global.y, selectionDistance));
 
     return simulation.find(x, y, selectionDistance);
   }
 
   const dragstarted = (event: DragEvent) => {
+    console.log('dragstarted', event.x, event.y);
+
     if (!event.active) simulation.alphaTarget(0.3).restart();
     interactionCallback((event.subject as any).id, 'drag')
     viewport.pause = true;
@@ -49,9 +55,8 @@ function createInteraction(
   }
 
   const dragended = (event: DragEvent) => {
-    draggedNode = null;
-    interactionCallback(draggedNode, 'drag')
-    if (!event.active) simulation.alphaTarget(0);
+    interactionCallback(draggedNode = null, 'drag')
+    if (!event.active) simulation.alphaTarget(0.1);
     viewport.pause = false;
     event.subject.fx = null;
     event.subject.fy = null;
@@ -64,18 +69,24 @@ function createInteraction(
     .on("end", dragended) as any);
 
 
-  const onPanOrDrag =(event: InteractionEvent) => {
+  const onPanOrDrag = (event: InteractionEvent) => {
     if (!draggedNode) return;
     // draggedNode.position = viewport.toWorld(event.data.global);
     renderGroup(draggedNode.name);
   };
+
   const onNodeMouseDown = (event: InteractionEvent) => {
+    console.log('onNodeMouseDown:', event.currentTarget.name);
+    console.log('             at:', event.data.global.x, event.data.global.y);
+
     draggedNode = event.currentTarget;
     renderer.plugins.interaction.on('mousemove', onPanOrDrag);
     viewport.pause = true;
   };
 
   const onNodeMouseUp = () => {
+    console.log('onNodeMouseUp', draggedNode?.name);
+
     draggedNode = null;
     renderer.plugins.interaction.off('mousemove', onPanOrDrag);
     viewport.pause = false;
